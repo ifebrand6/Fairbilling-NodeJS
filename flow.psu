@@ -1,0 +1,15 @@
+ // Step 2: Attempt to sanitize the data
+      // console.log(fileContents)
+     //  const sanitizedData = dataSanitizer(fileContents);
+
+      // Step 3: Attempt to compute and summarize data
+      // const userDataSummary = attemptToComputeAndSummarizeData(sanitizedData);
+
+      // Step 4: Format the data to a clean output
+      // const formattedData = attemptToFormatData(userDataSummary);
+
+      // Step 5: Display the formatted data on the terminal/CLI
+      // attemptToDisplayOnCLI(formattedData);
+
+      // console.log('Processing completed successfully!');
+     //  displayUserDataInCLI
