@@ -1,0 +1,35 @@
+{
+  "name": "fair-billinglog-pulse",
+  "version": "1.0.0",
+  "description": "FairBillingLogPulse processes hosted application providers' log files, generating a concise report detailing users, session counts, and the minimum feasible total duration of their concurrent sessions in seconds, ensuring accuracy and transparency in billing data.",
+  "main": "./bin/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ifebrand6/Fairbilling-NodeJS.git"
+  },
+  "keywords": [
+    "hosted",
+    "application",
+    "providers",
+    "fair-billing"
+  ],
+  "author": "Emmanuel Ifechukwu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ifebrand6/Fairbilling-NodeJS/issues"
+  },
+  "homepage": "https://github.com/ifebrand6/Fairbilling-NodeJS#readme",
+  "bin": {
+    "fblogpulse-cli": "./bin/index.js"
+  },
+  "dependencies": {
+    "jest": "24.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0"
+  }
+}
