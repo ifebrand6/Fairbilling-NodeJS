@@ -1,18 +1,28 @@
 #! /usr/bin/env node
 
-const processData = require('../src/commands/fblogpulse-cli');
+const fileReader = require('../src/utils/FileReader');
+const displayUserDataInCLI = require('../src/modules/CLIPresentation');
+const computeData = require('../src/modules/UserDataProcessor');
 
-const args = process.argv.slice(2);
+// Extract filePath from command line arguments
+const filePath = process.argv[2];
 
-// Ensure a file path is provided
-if (args.length !== 1) {
-  console.error('Usage: fblogpulse-cli  <dataFilePath>');
-  console.error('Please provide the path to the data file.');
-  process.exit(1);
+function processFileAndDisplayOnCLI(filePath) {
+  fileReader(filePath)
+    .then((fileContents) => {
+      processedUserData = computeData(fileContents)
+      displayUserDataInCLI(processedUserData)
+    })
+    .catch((error) => {
+      console.error('Error during processing:', error.message);
+    });
 }
 
-// Extract the data file path from the command-line argument
-const dataFilePath = args[0];
+// TODO optimized this: fileRead module should handle the exception when no file is specify
+if (!filePath) {
 
-// Run the data processing logic
-processData(dataFilePath);
+  console.error('Please provide the path to the file as a command line argument.');
+} else {
+  processFileAndDisplayOnCLI(filePath);
+
+}
