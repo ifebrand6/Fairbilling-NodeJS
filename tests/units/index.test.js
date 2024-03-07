@@ -1,4 +1,5 @@
 const dataSanitizer = require("../../src/modules/data_sanitizer");
+const { generateCLIReport } = require("../../src/modules/report_data_handler");
 const generateUsersReport = require("../../src/modules/user_data_processor");
 const dataFactory = require("../factories/dataFactory");
 
@@ -6,6 +7,7 @@ const dataFactory = require("../factories/dataFactory");
 
 describe('DataSanitizer', () => {
   test('should process data correctly', () => {
+    // console.log(dataFactory.sampleData)
     const data = dataSanitizer.sanitizeAndPrepareUserSessions(dataFactory.sampleData);
 
     // Assert that user sessions occur in pairs (a basic way to check if the length is even)
@@ -13,13 +15,16 @@ describe('DataSanitizer', () => {
 
     // assert that it contains '14:00:01 ALICE99 End' as the last element
     const lastElement = data[data.length - 1];
-    expect(lastElement).toBe('14:00:02 ALICE99 End');
+    expect(lastElement).toBe('14:00:01 ALICE99 End');
   });
 
-  test('should return empty response for no valid data', () => {
+  test('should return error for file with no valid data / empty file', () => {
     const data = dataSanitizer.sanitizeAndPrepareUserSessions(dataFactory.emptySampleData);
+    expect(data.length).toBe(0);
+  });
 
-    // Assert that it returns an empty array
+  test('should filter out events that has different time format', () => {
+    const data = dataSanitizer.sanitizeAndPrepareUserSessions(dataFactory.badTimeFormatData);
     expect(data.length).toBe(0);
   });
 });
@@ -27,14 +32,13 @@ describe('DataSanitizer', () => {
 
 describe('UserDataProcessor', () => {
   test('should compute user data correctly', () => {
-    const sanitizeData = dataSanitizer.sanitizeAndPrepareUserSessions(dataFactory.sampleData);
-    const processedUsersSessionData = generateUsersReport(sanitizeData)
-
+    const processedUsersSessionData = generateUsersReport(dataFactory.sampleData)
     expect(Array.isArray(processedUsersSessionData)).toBe(true);
+    const first_user = processedUsersSessionData[0]
 
-    expect(processedUsersSessionData[0].name).toBe('ALICE99');
-    expect(processedUsersSessionData[0].sessionCount).toBe(4);
-    expect(processedUsersSessionData[0].duration).toBe(240);
+    expect(first_user.name).toBe('CHARLIE');
+    expect(first_user.sessionCount).toBe(1);
+    expect(first_user.duration).toBe(1);
   });
 });
 
@@ -42,21 +46,20 @@ describe('ReportDataHandler', () => {
   describe('generateCLIReport', () => {
     test('should correctly format data for CLI', () => {
       const sampleData = [
-        { name: 'ALICE99', sessionCount: 3, durationInSeconds: 300 },
-        { name: 'BOB123', sessionCount: 2, durationInSeconds: 180 }
+        { name: 'ALICE99', sessionCount: 3, durationInSeconds: "300" },
+        { name: 'BOB123', sessionCount: 2, durationInSeconds: "180" }
       ];
 
       // Create a mock for console.log
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
 
       // Call the function
-      ReportDataHandler.generateCLIReport(sampleData);
+      generateCLIReport(sampleData);
 
       // Add assertions based on the expected console.log calls
-      expect(consoleSpy).toHaveBeenCalledTimes(1);
+      expect(consoleSpy).toHaveBeenCalledTimes(3);
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('ALICE99'),
-        expect.stringContaining('BOB123')
+        expect.stringContaining('ALICE99')
       );
 
       // Restore the original console.log after the test

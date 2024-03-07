@@ -10,15 +10,15 @@
 
 const dataSanitizer = require("./data_sanitizer");
 
-function generateUsersReport(filepath) {
-  const sanitizedUsersData = dataSanitizer.sanitizeAndPrepareUserSessions(filepath);
-// TODO option for renaming
-  const result = calculateUserSessionData(sanitizedUsersData)
+function generateUsersReport(data) {
+  const sanitizedUsersData = dataSanitizer.sanitizeAndPrepareUserSessions(data);
+
+  const result = sumUserSessionData(sanitizedUsersData)
   return result
 }
 
 
-function calculateUserSessionData(dataEntries) {
+function sumUserSessionData(dataEntries) {
   var userSessions = {};
 
   // Function to convert HH:mm:ss to total seconds

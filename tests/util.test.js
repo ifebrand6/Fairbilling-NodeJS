@@ -1,15 +1,19 @@
 const readFile = require('../src/utils/file_reader');
-const dataFactory = require('./factories/dataFactory');
+const validFilePath = require('path').join(__dirname, '../sample/logger.txt');
+const invalidFilePath = require('path').join(__dirname, '../sample/unsupported.rb');
+
+
+
 
 describe('file_reader', () => {
   describe('readFile', () => {
     test('should read and process a valid file', async () => {
-      const processedData = await readFile(dataFactory.validFilePath);
+      const processedData = await readFile(validFilePath);
       expect(processedData).toBeDefined();
     });
 
     test('should throw an error for an invalid file', async () => {
-      await expect(readFile(dataFactory.invalidFilePath)).rejects.toThrowError();
+      await expect(readFile(invalidFilePath)).rejects.toThrowError();
     });
   });
 });

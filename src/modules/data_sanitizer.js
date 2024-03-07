@@ -13,15 +13,21 @@ function sanitizeAndPrepareUserSessions(data) {
   // Split the data into events
   let events = data.split('\n');
   events = filterValidEvents(events)
-  // Extract times from each event
-  const times = events.map((event) => extractTime(event));
 
-  const earliestTime = formatTime(findEarliestTime(times));
-  const latestTime = formatTime(findLatestTime(times));
+  if (events.length == 0) {
+    return []
+  } else {
+    // Extract times from each event
+    const times = events.map((event) => extractTime(event));
 
-  const completedEventSeries = fillMissingSessions(events, earliestTime, latestTime)
+    const earliestTime = formatTime(findEarliestTime(times));
+    const latestTime = formatTime(findLatestTime(times));
 
-  return completedEventSeries;
+    const completedEventSeries = fillMissingSessions(events, earliestTime, latestTime)
+
+    return completedEventSeries;
+  }
+
 }
 
 // Assuming that there can be only one missing  event in session pair/user
@@ -128,11 +134,13 @@ function isValidEvent(event) {
   const hasStartOrEnd = /\b(Start|End)\b/.test(event);
   const hasAlphanumericString = /\b[A-Za-z0-9]+\b/.test(event);
 
-  // TODO better naming
+ // Check if the event has a valid time format (HH:MM:SS)
+  const hasValidTimeFormat = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(event.split(' ')[0]);
+
   const hasThreeTokens = event.split(' ').length === 3;
 
-  // Check if the event is not partially complete, contains three params, and has an exact match for "Start" or "End"
-  const isValid = hasStartOrEnd && hasAlphanumericString && hasThreeTokens;
+  // Check if the event is not partially complete, contains three token, and has an exact match for "Start" or "End"
+  const isValid = hasStartOrEnd && hasAlphanumericString && hasThreeTokens && hasValidTimeFormat;
 
   return isValid;
 }
@@ -164,6 +172,7 @@ function extractUsername(event) {
 }
 
 function formatTime(timeObj) {
+
   const { hours, minutes, seconds } = timeObj;
 
   const formattedHours = hours < 10 ? '0' + hours : (hours < 24 ? hours : hours % 12);

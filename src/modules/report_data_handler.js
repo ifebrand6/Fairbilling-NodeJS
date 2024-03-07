@@ -9,15 +9,14 @@
 
 
 // This function transforms the data into a format suitable for presentation on the terminal
-function generateCLIReport(userData) {
+function generateCLIReport(usersData) {
   try {
-    if (!Array.isArray(userData)) {
+    if (!Array.isArray(usersData)) {
       throw new Error('Invalid input. Expected an array of user data.');
     }
 
-    if (userData.length === 0) {
-      console.log('No user data to display.');
-      return;
+    if (usersData.length === 0) {
+      throw new Error('Invalid or empty data file.');
     }
 
     // Find maximum lengths for each column
@@ -28,7 +27,7 @@ function generateCLIReport(userData) {
     };
 
     // Update maximum lengths based on actual data
-    userData.forEach(user => {
+    usersData.forEach(user => {
       maxLengths.Name = Math.max(maxLengths.Name, user.name.length);
       maxLengths['Session Count'] = Math.max(maxLengths['Session Count'], String(user.sessionCount).length);
       maxLengths.Duration = Math.max(maxLengths.Duration, String(formatDuration(user.duration)).length);
@@ -40,7 +39,7 @@ function generateCLIReport(userData) {
       padRight('Duration', maxLengths.Duration));
 
     // Print each row
-    userData.forEach(user => {
+    usersData.forEach(user => {
       console.log(padRight(user.name, maxLengths.Name) + '  ' +
         padRight(String(user.sessionCount), maxLengths['Session Count']) + '  ' +
         padRight(formatDuration(user.duration), maxLengths.Duration));
