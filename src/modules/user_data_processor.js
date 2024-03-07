@@ -1,7 +1,18 @@
-const sanitizeAndPrepareUserSessions = require("./DataSanitizer");
+/**
+ * @fileOverview UserDataProcessor Module
+ * @module UserDataProcessor
+ * @description
+ * The `UserDataProcessor` module exports a function to process and compute parsed users data.
+ * This function map user-specific data to a unique user - sum session durations,
+ * and counts the number of sessions per user.
+ *
+ */
+
+const dataSanitizer = require("./data_sanitizer");
 
 function generateUsersReport(filepath) {
-  const sanitizedUsersData = sanitizeAndPrepareUserSessions(filepath);
+  const sanitizedUsersData = dataSanitizer.sanitizeAndPrepareUserSessions(filepath);
+// TODO option for renaming
   const result = calculateUserSessionData(sanitizedUsersData)
   return result
 }
@@ -15,6 +26,7 @@ function calculateUserSessionData(dataEntries) {
     var timeComponents = time.split(':').map(Number);
     return timeComponents[0] * 3600 + timeComponents[1] * 60 + timeComponents[2];
   }
+
 
   // Process each user data entry
   for (var i = 0; i < dataEntries.length; i++) {

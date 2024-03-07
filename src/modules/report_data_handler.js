@@ -1,4 +1,14 @@
+/**
+ * @fileOverview ReportDataHandler Module
+ * @module ReportDataHandler
+ * @description
+ * The `ReportDataHandler` module export functions that transforms data for
+ * suitable for presentation.
+ *
+ */
 
+
+// This function transforms the data into a format suitable for presentation on the terminal
 function generateCLIReport(userData) {
   try {
     if (!Array.isArray(userData)) {

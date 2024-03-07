@@ -1,14 +1,22 @@
 
-module.exports = function dataSanitizer(data) {
-  // Split the data into lines
-let lines = data.split('\n');
+/**
+ * @fileOverview data_sanitizer
+ * @module DataSanitizer
+ * @description
+ * The `DataSanitizer` module exports functions to sanitize and prepare data for processing.
+ * These functions collectively address incomplete entries, remove invalid data, and ensure
+ * proper formatting to produce clean and usable data.
+ *
+ */
 
+function sanitizeAndPrepareUserSessions(data) {
+  // Split the data into lines
+  let lines = data.split('\n');
 
   lines = filterValidLines(lines)
 
   // Extract times from each line
   const times = lines.map((line) => extractTime(line));
-
 
   const earliestTime = findEarliestTime(times)
   const latestTime = findLatestTime(times);
@@ -72,7 +80,6 @@ function findLatestTime(times) {
   };
 }
 
-// TODO edge case where there are only two valid InputDeviceInfo(eg: '11:04:21 ALICE')
 function filterValidLines(lines) {
   return lines.filter((line) => isValidLine(escapeInvalidCharacters(line)));
 }
@@ -97,14 +104,6 @@ function escapeInvalidCharacters(line) {
   const escapedLine = line.replace(/[&<>"']/g, ''); // Example: Replace with an empty string
 
   return escapedLine;
-}
-
-
-function formatLineToNextLine(line) {
-  // Add a newline character at the end of the line
-  const formattedLine = line + '\n';
-
-  return formattedLine;
 }
 
 function completeIncompleteSessions(lines, earliestTime, latestTime) {
@@ -146,34 +145,39 @@ function completeIncompleteSessions(lines, earliestTime, latestTime) {
 }
 
 function extractUsername(line) {
-  // Assuming the username is the string between the last space and the word "Start" or "End"
+  // Assumed the username is the string between the last space and the word "Start" or "End"
   const startIdx = line.lastIndexOf(' ') + 1;
   const endIdx = line.includes('Start') ? line.indexOf('Start') : line.indexOf('End');
+
   return line.substring(startIdx, endIdx).trim();
 }
 
 // TODO write function
 function fillMissingSession(lines, earliestTime, latestTime) {
   var logEntries = [
-  '14:02:03 ALICE99 Start',
-  '14:02:34 ALICE99 End',
-  '14:02:58 ALICE99 Start',
-  '14:03:35 ALICE99 End',
-  '14:03:33 ALICE99 Start',
-  '14:04:05 ALICE99 End',
-  '14:02:03 ALICE99 Start',
-  '14:04:23 ALICE99 End',
-  '14:03:02 CHARLIE Start',
-  '14:03:37 CHARLIE End',
-  '14:04:41 CHARLIE Start',
-  '14:04:41 CHARLIE End',
-  '14:02:03 CHARLIE End',
-  '14:02:05 CHARLIE End'
-];
+    '14:02:03 ALICE99 Start',
+    '14:02:34 ALICE99 End',
+    '14:02:58 ALICE99 Start',
+    '14:03:35 ALICE99 End',
+    '14:03:33 ALICE99 Start',
+    '14:04:05 ALICE99 End',
+    '14:02:03 ALICE99 Start',
+    '14:04:23 ALICE99 End',
+    '14:03:02 CHARLIE Start',
+    '14:03:37 CHARLIE End',
+    '14:04:41 CHARLIE Start',
+    '14:04:41 CHARLIE End',
+    '14:02:03 CHARLIE End',
+    '14:02:05 CHARLIE End'
+  ];
 
   r = ['14:00:00 ALICE99 Start', '14:00:00 CHARLIE Start', '14:00:01 CHARLIE End', '14:00:01 ALICE99 End']
   return logEntries
 }
+
+module.exports = {
+  sanitizeAndPrepareUserSessions,
+};
 
 
 
