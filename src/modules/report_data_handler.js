@@ -22,27 +22,27 @@ function generateCLIReport(usersData) {
     // Find maximum lengths for each column
     const maxLengths = {
       Name: 4, // Minimum length for "Name"
-      'Session Count': 12, // Minimum length for "Session Count"
-      Duration: 8, // Minimum length for "Duration"
+      Sessions: 8, // Minimum length for "Sessions"
+      TotalTime: 8, // Minimum length for "TotalTime"
     };
 
     // Update maximum lengths based on actual data
     usersData.forEach(user => {
       maxLengths.Name = Math.max(maxLengths.Name, user.name.length);
-      maxLengths['Session Count'] = Math.max(maxLengths['Session Count'], String(user.sessionCount).length);
-      maxLengths.Duration = Math.max(maxLengths.Duration, String(formatDuration(user.duration)).length);
+      maxLengths.Sessions = Math.max(maxLengths['Sessions'], String(user.sessionCount).length);
+      maxLengths.TotalTime = Math.max(maxLengths.TotalTime, String(formatTotalTime(user.duration)).length);
     });
 
     // Print table header
     console.log(padRight('Name', maxLengths.Name) + '  ' +
-      padRight('SessionCount', maxLengths['Session Count']) + '  ' +
-      padRight('Duration', maxLengths.Duration));
+      padRight('Sessions', maxLengths.Sessions) + '  ' +
+      padRight('TotalTime', maxLengths.TotalTime));
 
     // Print each row
     usersData.forEach(user => {
       console.log(padRight(user.name, maxLengths.Name) + '  ' +
-        padRight(String(user.sessionCount), maxLengths['Session Count']) + '  ' +
-        padRight(formatDuration(user.duration), maxLengths.Duration));
+        padRight(String(user.sessionCount), maxLengths['Sessions']) + '  ' +
+        padRight(formatTotalTime(user.duration), maxLengths.TotalTime));
     });
   } catch (error) {
     console.error('Error displaying user data:', error.message);
@@ -50,7 +50,7 @@ function generateCLIReport(usersData) {
 };
 
 // Future enhancement: This function is designed to accommodate additional time format conversions.
-function formatDuration(durationInSeconds) {
+function formatTotalTime(durationInSeconds) {
   return parseInt(durationInSeconds);
 }
 function padRight(str, length) {

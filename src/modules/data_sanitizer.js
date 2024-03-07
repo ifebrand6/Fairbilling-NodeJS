@@ -9,10 +9,14 @@
  *
  */
 
+const {sortEvents} = require("./common/helper");
+const { extractTime,findEarliestAndLatestTime } = require("../utils/time");
+
 function sanitizeAndPrepareUserSessions(data) {
   // Split the data into events
   let events = data.split('\n');
   events = filterValidEvents(events)
+  events = sortEvents(events)
 
   if (events.length == 0) {
     return []
@@ -20,8 +24,7 @@ function sanitizeAndPrepareUserSessions(data) {
     // Extract times from each event
     const times = events.map((event) => extractTime(event));
 
-    const earliestTime = formatTime(findEarliestTime(times));
-    const latestTime = formatTime(findLatestTime(times));
+    const { earliestTime, latestTime } = findEarliestAndLatestTime(times);
 
     const completedEventSeries = fillMissingSessions(events, earliestTime, latestTime)
 
@@ -70,59 +73,6 @@ function fillMissingSessions(events, earliestTime, latestTime) {
   return result;
 }
 
-// Function to extract time from a event
-function extractTime(event) {
-  const timeMatch = event.match(/^(\d{2}):(\d{2}):(\d{2})/);
-
-  if (timeMatch) {
-    // Extract hours, minutes, and seconds separately
-    const [fullMatch, hours, minutes, seconds] = timeMatch;
-
-    return {
-      hours: parseInt(hours, 10),
-      minutes: parseInt(minutes, 10),
-      seconds: parseInt(seconds, 10),
-    };
-  }
-
-  return null;
-}
-
-function findEarliestTime(times) {
-  const filteredTimes = times.filter((time) => time !== null);
-
-  if (filteredTimes.length === 0) {
-    return null; // No valid times
-  }
-
-  const earliestHours = Math.min(...filteredTimes.map((time) => time.hours));
-  const earliestMinutes = Math.min(...filteredTimes.map((time) => time.minutes));
-  const earliestSeconds = Math.min(...filteredTimes.map((time) => time.seconds));
-
-  return {
-    hours: earliestHours,
-    minutes: earliestMinutes,
-    seconds: earliestSeconds,
-  };
-}
-
-function findLatestTime(times) {
-  const filteredTimes = times.filter((time) => time !== null);
-
-  if (filteredTimes.length === 0) {
-    return null; // No valid times
-  }
-
-  const latestHours = Math.max(...filteredTimes.map((time) => time.hours));
-  const latestMinutes = Math.max(...filteredTimes.map((time) => time.minutes));
-  const latestSeconds = Math.max(...filteredTimes.map((time) => time.seconds));
-
-  return {
-    hours: latestHours,
-    minutes: latestMinutes,
-    seconds: latestSeconds,
-  };
-}
 
 function filterValidEvents(events) {
   return events.filter((event) => isValidEvent(escapeInvalidCharacters(event)));
@@ -155,33 +105,12 @@ function removeExtraSpaces(inputString) {
   return finalString;
 }
 
-
 function escapeInvalidCharacters(event) {
   // Replace invalid characters with a placeholder or an empty string
   const escapedEvent = event.replace(/[&<>"']/g, ''); // Example: Replace with an empty string
 
   return escapedEvent;
 }
-
-function extractUsername(event) {
-  // Assumed the username is the string between the last space and the word "Start" or "End"
-  const startIdx = event.lastIndexOf(' ') + 1;
-  const endIdx = event.includes('Start') ? event.indexOf('Start') : event.indexOf('End');
-
-  return event.substring(startIdx, endIdx).trim();
-}
-
-function formatTime(timeObj) {
-
-  const { hours, minutes, seconds } = timeObj;
-
-  const formattedHours = hours < 10 ? '0' + hours : (hours < 24 ? hours : hours % 12);
-  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-  const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
-
-  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-}
-
 
 module.exports = {
   sanitizeAndPrepareUserSessions,

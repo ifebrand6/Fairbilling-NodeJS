@@ -21,6 +21,7 @@ function generateUsersReport(data) {
 function sumUserSessionData(dataEntries) {
   var userSessions = {};
 
+
   // Function to convert HH:mm:ss to total seconds
   function convertToSeconds(time) {
     var timeComponents = time.split(':').map(Number);
