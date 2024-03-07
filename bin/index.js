@@ -1,28 +1,20 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 
-const fileReader = require('../src/utils/FileReader');
-const displayUserDataInCLI = require('../src/modules/CLIPresentation');
-const computeData = require('../src/modules/UserDataProcessor');
+const flgblogplusCli = require("../src/commands/fblogpulse-cli");
 
-// Extract filePath from command line arguments
-const filePath = process.argv[2];
-
-function processFileAndDisplayOnCLI(filePath) {
-  fileReader(filePath)
-    .then((fileContents) => {
-      processedUserData = computeData(fileContents)
-      displayUserDataInCLI(processedUserData)
-    })
-    .catch((error) => {
-      console.error('Error during processing:', error.message);
-    });
+// Check if there is a single command-line argument
+if (process.argv.length === 3) {
+  // Assumed single argument provided is the file path
+  const filePath = process.argv[2];
+  flgblogplusCli(filePath);
+} else if (process.argv.length === 2 || process.argv.includes('-h') || process.argv.includes('--help')) {
+  displayHelp();
+} else {
+  console.error('Invalid usage. Run with -h or --help for usage information.');
 }
 
-// TODO optimized this: fileRead module should handle the exception when no file is specify
-if (!filePath) {
-
-  console.error('Please provide the path to the file as a command line argument.');
-} else {
-  processFileAndDisplayOnCLI(filePath);
-
+function displayHelp() {
+  console.log('Usage: flgblogplus-cli [file-path]');
+  console.log('Options:');
+  console.log('  -h, --help    Display help information');
 }

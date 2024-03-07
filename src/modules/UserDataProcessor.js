@@ -1,10 +1,8 @@
-const dataSanitizer = require("./DataSanitizer");
-var log =
-  [{ name: 'CHARLIE', sessionCount: 4, duration: 400 }, { name: 'Alice', sessionCount: 8, duration: 60 }];
+const sanitizeAndPrepareUserSessions = require("./DataSanitizer");
 
-function computeData(file) {
-  const sanitizedData = dataSanitizer(file);
-  const result = calculateUserSessionData(sanitizedData)
+function generateUsersReport(filepath) {
+  const sanitizedUsersData = sanitizeAndPrepareUserSessions(filepath);
+  const result = calculateUserSessionData(sanitizedUsersData)
   return result
 }
 
@@ -18,7 +16,7 @@ function calculateUserSessionData(dataEntries) {
     return timeComponents[0] * 3600 + timeComponents[1] * 60 + timeComponents[2];
   }
 
-  // Process each data entry
+  // Process each user data entry
   for (var i = 0; i < dataEntries.length; i++) {
     var parts = dataEntries[i].split(' ');
     var time = parts[0];
@@ -43,7 +41,7 @@ function calculateUserSessionData(dataEntries) {
   }
 
   // Format output data
-  var userData = Object.keys(userSessions).map(function (name) {
+  var formattedUserSessionData = Object.keys(userSessions).map(function (name) {
     var data = userSessions[name];
     return {
       name: name,
@@ -54,6 +52,6 @@ function calculateUserSessionData(dataEntries) {
     };
   });
 
-  return userData;
+  return formattedUserSessionData;
 }
-module.exports = computeData;
+module.exports = generateUsersReport;

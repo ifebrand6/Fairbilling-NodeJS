@@ -1,16 +1,17 @@
-// dataProcessor.js
+const fileReader = require('../utils/FileReader');
+const processLogData = require('../modules/UserDataProcessor');
+const reportDataHandler = require('../modules/ReportDataHandler');
 
-const fs = require('fs');
-
-function processData(dataFilePath) {
-  try {
-    const data = fs.readFileSync(dataFilePath, 'utf8');
-    console.log(`Data file contents:\n${data}`);
-    // Your logic for processing the data goes here
-  } catch (error) {
-    console.error(`Error reading the data file: ${error.message}`);
-    process.exit(1);
-  }
+function flgblogplusCli(filePath) {
+  fileReader(filePath)
+    .then((fileContents) => {
+      processedUsersSessionData = processLogData(fileContents)
+      reportDataHandler.generateCLIReport(processedUsersSessionData)
+    })
+    .catch((error) => {
+      console.error('Error during processing:', error.message);
+    });
 }
 
-module.exports = processData;
+module.exports = flgblogplusCli;
+
