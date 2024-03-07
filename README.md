@@ -25,5 +25,5 @@ fblogpulse-cli path/to/your/logfile.txt
 
 ## Testing
 ```sh
-npm jest
+yarn test
 ```
