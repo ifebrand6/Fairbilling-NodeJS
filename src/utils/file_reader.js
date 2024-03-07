@@ -1,9 +1,19 @@
+/**
+ * @fileOverview file_reader
+ * @module FileReader
+ * @description
+ * The `file_reader` util provides functionality to read and process text and log files.
+ * It includes promise-based functions for reading files and processing their contents.
+ * Implements file type validation and enforces size limits for optimized resource
+ * utilization and system performance.
+ *
+ */
+
 const fs = require('fs');
 const path = require('path');
 const validExtensions = ['.txt', '.log'];
 
-// Function to attempt processing the file
-function fileReader(filePath) {
+function readFile(filePath) {
   return new Promise((resolve, reject) => {
     try {
       // Check if the file has a valid extension (.txt or .log)
@@ -45,4 +55,4 @@ function readFileAsync(filePath) {
 }
 
 // Export the FileReader function for CommonJS modules
-module.exports = fileReader;
+module.exports = readFile;

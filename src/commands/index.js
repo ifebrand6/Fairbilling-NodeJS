@@ -8,7 +8,7 @@
  *
  */
 
-const fileReader = require('../utils/FileReader');
+const readFile = require('../utils/file_reader');
 const processLogData = require('../modules/user_data_processor');
 const reportDataHandler = require('../modules/report_data_handler');
 
@@ -16,7 +16,7 @@ const reportDataHandler = require('../modules/report_data_handler');
 const filePath = process.argv[2];
 
 function processFileAndGenerateReport(filePath) {
-  fileReader(filePath)
+  readFile(filePath)
     .then((fileContents) => {
       processedUsersSessionData = processLogData(fileContents)
       reportDataHandler.generateCLIReport(processedUsersSessionData)
