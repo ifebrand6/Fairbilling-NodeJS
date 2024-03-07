@@ -1,4 +1,7 @@
- // Step 2: Attempt to sanitize the data
+// Step 1: Attempt to parse file to data
+     // console.log(file_path)
+     //  const fileContents = readFile(file_path);
+// Step 2: Attempt to sanitize the data
       // console.log(fileContents)
      //  const sanitizedData = dataSanitizer(fileContents);
 
@@ -13,3 +16,29 @@
 
       // console.log('Processing completed successfully!');
      //  displayUserDataInCLI
+
+Given
+01:00:00 ALICE99 Start
+01:00:01 CHARLES Start
+01:00:02 CHARLES End
+01:00:04 ALICE99 End
+01:00:04 ALICE99 End
+
+fill the data for the missing pair of sessions data when
+The conditions are:
+- A user can have more than one session concurrently
+- When there is an 'End' with no possible matching start, the start time is given in as a constant ST
+- when there is a 'Start' with no possible matching end, the end time is given as a constant ET
+- Data input just a the sample given is chronologically ordered
+- All records happen with a single day; 00:00:00 - 23:59:59
+Write a function that fills the missing data and output a complete data set
+
+for example in the given sample, where ST = 01:00:00 and ET = 01:00:04   the function will return:
+01:00:00 ALICE99 Start
+01:00:00 ALICE99 Start
+01:00:01 CHARLES Start
+01:00:02 CHARLES End
+01:00:04 ALICE99 End
+01:00:04 ALICE99 End
+
+Notice that last line doesn't have a corresponding start pair, so we a new line is added, 01:00:00 ALICE99 Start

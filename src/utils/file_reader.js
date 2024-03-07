@@ -54,5 +54,4 @@ function readFileAsync(filePath) {
   });
 }
 
-// Export the FileReader function for CommonJS modules
 module.exports = readFile;

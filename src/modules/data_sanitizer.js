@@ -10,25 +10,63 @@
  */
 
 function sanitizeAndPrepareUserSessions(data) {
-  // Split the data into lines
-  let lines = data.split('\n');
+  // Split the data into events
+  let events = data.split('\n');
+  events = filterValidEvents(events)
+  // Extract times from each event
+  const times = events.map((event) => extractTime(event));
 
-  lines = filterValidLines(lines)
+  const earliestTime = formatTime(findEarliestTime(times));
+  const latestTime = formatTime(findLatestTime(times));
 
-  // Extract times from each line
-  const times = lines.map((line) => extractTime(line));
+  const completedEventSeries = fillMissingSessions(events, earliestTime, latestTime)
 
-  const earliestTime = findEarliestTime(times)
-  const latestTime = findLatestTime(times);
+  return completedEventSeries;
+}
 
-  const completedSeries = fillMissingSession(lines, earliestTime, latestTime)
+// Assuming that there can be only one missing  event in session pair/user
+function fillMissingSessions(events, earliestTime, latestTime) {
+  const ST = earliestTime; // Constant start time
+  const ET = latestTime; // Constant end time
 
-  return completedSeries;
-};
+  const sessions = new Map(); // Map to store active sessions
 
-// Function to extract time from a line
-function extractTime(line) {
-  const timeMatch = line.match(/^(\d{2}):(\d{2}):(\d{2})/);
+  const result = [];
+
+  for (const event of events) {
+    const [time, user, action] = event.split(" ");
+    const key = `${user} ${action}`;
+
+    if (action === "Start") {
+      // Start event: add to active sessions
+      sessions.set(user, time);
+    } else if (action === "End") {
+      // End event: check if matching start exists
+      if (sessions.has(user)) {
+        // Matching start found
+        result.push(`${sessions.get(user)} ${user} Start`);
+        result.push(`${time} ${user} End`);
+        sessions.delete(user);
+      } else {
+        // No matching start, use constant start time
+        result.push(`${ST} ${user} Start`);
+        result.push(`${time} ${user} End`);
+      }
+    }
+  }
+
+  // Add remaining active sessions
+  for (const [user, startTime] of sessions) {
+    result.push(`${startTime} ${user} Start`);
+    result.push(`${ET} ${user} End`);
+  }
+
+  return result;
+}
+
+// Function to extract time from a event
+function extractTime(event) {
+  const timeMatch = event.match(/^(\d{2}):(\d{2}):(\d{2})/);
 
   if (timeMatch) {
     // Extract hours, minutes, and seconds separately
@@ -80,100 +118,61 @@ function findLatestTime(times) {
   };
 }
 
-function filterValidLines(lines) {
-  return lines.filter((line) => isValidLine(escapeInvalidCharacters(line)));
+function filterValidEvents(events) {
+  return events.filter((event) => isValidEvent(escapeInvalidCharacters(event)));
 }
-// Function to check if a line meets the criteria
-function isValidLine(line) {
-  // Check if the line contains "Start" or "End" and has an alphanumeric string
-  const hasStartOrEnd = /\b(Start|End)\b/.test(line);
-  const hasAlphanumericString = /\b[A-Za-z0-9]+\b/.test(line);
+// Function to check if a event meets the criteria
+function isValidEvent(event) {
+  event = removeExtraSpaces(event)
+  // Check if the event contains "Start" or "End" and has an alphanumeric string
+  const hasStartOrEnd = /\b(Start|End)\b/.test(event);
+  const hasAlphanumericString = /\b[A-Za-z0-9]+\b/.test(event);
 
   // TODO better naming
-  const hasThreeTokens = line.split(' ').length === 3;
+  const hasThreeTokens = event.split(' ').length === 3;
 
-  // Check if the line is not partially complete, contains three params, and has an exact match for "Start" or "End"
+  // Check if the event is not partially complete, contains three params, and has an exact match for "Start" or "End"
   const isValid = hasStartOrEnd && hasAlphanumericString && hasThreeTokens;
 
   return isValid;
 }
 
+function removeExtraSpaces(inputString) {
+  // Replace multiple spaces with a single space
+  const trimmedString = inputString.replace(/\s+/g, " ");
 
-function escapeInvalidCharacters(line) {
+  // Remove leading and trailing spaces
+  const finalString = trimmedString.trim();
+
+  return finalString;
+}
+
+
+function escapeInvalidCharacters(event) {
   // Replace invalid characters with a placeholder or an empty string
-  const escapedLine = line.replace(/[&<>"']/g, ''); // Example: Replace with an empty string
+  const escapedEvent = event.replace(/[&<>"']/g, ''); // Example: Replace with an empty string
 
-  return escapedLine;
+  return escapedEvent;
 }
 
-function completeIncompleteSessions(lines, earliestTime, latestTime) {
-  const completedLines = [];
-  const startTimes = {}; // Dictionary to store start times for each username
-
-  lines.forEach((line) => {
-    const isStartLine = line.includes('Start');
-    const isEndLine = line.includes('End');
-    const username = extractUsername(line);
-
-    if (isStartLine) {
-      startTimes[username] = extractTime(line);
-    }
-
-    if (isEndLine && !startTimes[username]) {
-      // "End" entry with no matching "Start"
-      startTimes[username] = earliestTime;
-    }
-
-    if (isStartLine || isEndLine) {
-      // Append the completed line with the corrected start time
-      completedLines.push(`${startTimes[username]} ${line}`);
-      startTimes[username] = null; // Reset the start time after processing
-    } else {
-      // Other lines (not "Start" or "End")
-      completedLines.push(line);
-    }
-  });
-
-  // Handle the case where there is a "Start" with no matching "End"
-  for (const username in startTimes) {
-    if (startTimes.hasOwnProperty(username) && startTimes[username] && startTimes[username] !== latestTime) {
-      completedLines.push(`${latestTime} ${username} End`);
-    }
-  }
-
-  return completedLines;
-}
-
-function extractUsername(line) {
+function extractUsername(event) {
   // Assumed the username is the string between the last space and the word "Start" or "End"
-  const startIdx = line.lastIndexOf(' ') + 1;
-  const endIdx = line.includes('Start') ? line.indexOf('Start') : line.indexOf('End');
+  const startIdx = event.lastIndexOf(' ') + 1;
+  const endIdx = event.includes('Start') ? event.indexOf('Start') : event.indexOf('End');
 
-  return line.substring(startIdx, endIdx).trim();
+  return event.substring(startIdx, endIdx).trim();
 }
 
-// TODO write function
-function fillMissingSession(lines, earliestTime, latestTime) {
-  var logEntries = [
-    '14:02:03 ALICE99 Start',
-    '14:02:34 ALICE99 End',
-    '14:02:58 ALICE99 Start',
-    '14:03:35 ALICE99 End',
-    '14:03:33 ALICE99 Start',
-    '14:04:05 ALICE99 End',
-    '14:02:03 ALICE99 Start',
-    '14:04:23 ALICE99 End',
-    '14:03:02 CHARLIE Start',
-    '14:03:37 CHARLIE End',
-    '14:04:41 CHARLIE Start',
-    '14:04:41 CHARLIE End',
-    '14:02:03 CHARLIE End',
-    '14:02:05 CHARLIE End'
-  ];
+function formatTime(timeObj) {
+  const { hours, minutes, seconds } = timeObj;
 
-  r = ['14:00:00 ALICE99 Start', '14:00:00 CHARLIE Start', '14:00:01 CHARLIE End', '14:00:01 ALICE99 End']
-  return logEntries
+  const formattedHours = hours < 10 ? '0' + hours : (hours < 24 ? hours : hours % 12);
+  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+  const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 }
+
 
 module.exports = {
   sanitizeAndPrepareUserSessions,
