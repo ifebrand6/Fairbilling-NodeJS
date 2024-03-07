@@ -11,8 +11,7 @@ Install the dependencies and devDependencies and start the server.
 ```sh
 git clone https://github.com/ifebrand6/Fairbilling-NodeJS
 cd Fairbilling-NodeJS
-npm i
-npm install -g .
+yarn add
 ```
 
 ## Usage
