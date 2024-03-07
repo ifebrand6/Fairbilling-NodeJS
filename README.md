@@ -9,13 +9,20 @@ FairBillingLogPulse requires [Node.js](https://nodejs.org/) v6+ to run.
 Install the dependencies and devDependencies and start the server.
 
 ```sh
-git clone https://github.com/yourusername/FairBillingLogPulse.git
-cd FairBillingLogPulse
+git clone https://github.com/ifebrand6/Fairbilling-NodeJS
+cd Fairbilling-NodeJS
 npm i
 npm install -g .
 ```
 
 ## Usage
+Run the  FairBillingLogPulse by `node src/commands/index.js` followed by providing the path to your log file.
+For example:
+```sh
+node src/commands/index.js path/to/your/logfile.txt
+```
+###Alternatively
+
 Run the FairBillingLogPulse CLI `fblogpulse-cli` tool by providing the path to your log file.
 For example:
 ```sh
