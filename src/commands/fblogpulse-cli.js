@@ -1,16 +1,27 @@
-// dataProcessor.js
+/**
+ * @fileOverview flgblogplusCli Module
+ * @module flgblogplusCli
+ * @description
+ * The `flgblogplusCli` module is a core service that reads and generate report of the content
+ * of a specified log file. It exports a function, `flgblogplusCli`, which takes a file
+ * path as input and returns a Promise that resolves with the users session report.
+ *
+ */
 
-const fs = require('fs');
+const readFile = require('../utils/file_reader');
+const processLogData = require('../modules/user_data_processor');
+const reportDataHandler = require('../modules/report_data_handler');
 
-function processData(dataFilePath) {
-  try {
-    const data = fs.readFileSync(dataFilePath, 'utf8');
-    console.log(`Data file contents:\n${data}`);
-    // Your logic for processing the data goes here
-  } catch (error) {
-    console.error(`Error reading the data file: ${error.message}`);
-    process.exit(1);
-  }
+function flgblogplusCli(filePath) {
+  readFile(filePath)
+    .then((fileContents) => {
+      processedUsersSessionData = processLogData(fileContents)
+      reportDataHandler.generateCLIReport(processedUsersSessionData)
+    })
+    .catch((error) => {
+      console.error('Error during processing:', error.message);
+    });
 }
 
-module.exports = processData;
+module.exports = flgblogplusCli;
+

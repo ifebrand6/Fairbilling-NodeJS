@@ -1,18 +1,20 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 
-const processData = require('../src/commands/fblogpulse-cli');
+const flgblogplusCli = require("../src/commands/fblogpulse-cli");
 
-const args = process.argv.slice(2);
-
-// Ensure a file path is provided
-if (args.length !== 1) {
-  console.error('Usage: fblogpulse-cli  <dataFilePath>');
-  console.error('Please provide the path to the data file.');
-  process.exit(1);
+// Check if there is a single command-line argument
+if (process.argv.length === 3) {
+  // Assumed single argument provided is the file path
+  const filePath = process.argv[2];
+  flgblogplusCli(filePath);
+} else if (process.argv.length === 2 || process.argv.includes('-h') || process.argv.includes('--help')) {
+  displayHelp();
+} else {
+  console.error('Invalid usage. Run with -h or --help for usage information.');
 }
 
-// Extract the data file path from the command-line argument
-const dataFilePath = args[0];
-
-// Run the data processing logic
-processData(dataFilePath);
+function displayHelp() {
+  console.log('Usage: flgblogplus-cli [file-path]');
+  console.log('Options:');
+  console.log('  -h, --help    Display help information');
+}

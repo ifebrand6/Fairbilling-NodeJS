@@ -1,5 +1,15 @@
-import sum from '../src/utils/index';
+const readFile = require('../src/utils/file_reader');
+const dataFactory = require('./factories/dataFactory');
 
-test('adds 1 + 2 to equal 3', () => {
-  expect(sum(1, 2)).toBe(3);
+describe('file_reader', () => {
+  describe('readFile', () => {
+    test('should read and process a valid file', async () => {
+      const processedData = await readFile(dataFactory.validFilePath);
+      expect(processedData).toBeDefined();
+    });
+
+    test('should throw an error for an invalid file', async () => {
+      await expect(readFile(dataFactory.invalidFilePath)).rejects.toThrowError();
+    });
+  });
 });
