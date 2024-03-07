@@ -4,7 +4,8 @@
   "description": "FairBillingLogPulse processes hosted application providers' log files, generating a concise report detailing users, session counts, and the minimum feasible total duration of their concurrent sessions in seconds, ensuring accuracy and transparency in billing data.",
   "main": "./bin/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "node ./bin/index.js"
   },
   "repository": {
     "type": "git",

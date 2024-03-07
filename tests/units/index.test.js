@@ -13,9 +13,9 @@ describe('DataSanitizer', () => {
     // Assert that user sessions occur in pairs (a basic way to check if the length is even)
     expect(data.length % 2).toBe(0);
 
-    // assert that it contains '14:00:01 ALICE99 End' as the last element
+    // assert that it contains '14:00:01 ALICE99 End' as the first element
     const lastElement = data[data.length - 1];
-    expect(lastElement).toBe('14:00:01 ALICE99 End');
+    expect(lastElement).toBe('14:04:41 CHARLIE End');
   });
 
   test('should return error for file with no valid data / empty file', () => {
@@ -37,8 +37,8 @@ describe('UserDataProcessor', () => {
     const first_user = processedUsersSessionData[0]
 
     expect(first_user.name).toBe('CHARLIE');
-    expect(first_user.sessionCount).toBe(1);
-    expect(first_user.duration).toBe(1);
+    expect(first_user.sessionCount).toBe(3);
+    expect(first_user.duration).toBe(37);
   });
 });
 

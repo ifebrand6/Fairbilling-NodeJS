@@ -11,19 +11,19 @@ Install the dependencies and devDependencies and start the server.
 ```sh
 git clone https://github.com/ifebrand6/Fairbilling-NodeJS
 cd Fairbilling-NodeJS
-npm i
-npm install -g .
+yarn add
 ```
 
 ## Usage
-Run the  FairBillingLogPulse by `node src/commands/index.js` followed by providing the path to your log file.
+Run the  FairBillingLogPulse by `yarn build` followed by providing the path to your log file.
 For example:
 ```sh
-node src/commands/index.js path/to/your/logfile.txt
+yarn build path/to/your/logfile.txt
 ```
 ###Alternatively
 
 Run the FairBillingLogPulse CLI `fblogpulse-cli` tool by providing the path to your log file.
+Install app as package using `npm install -g .`
 For example:
 ```sh
 fblogpulse-cli path/to/your/logfile.txt
